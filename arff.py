@@ -202,11 +202,12 @@ if PY2:
 class ArffException(Exception):
     message = None
 
-    def __init__(self):
+    def __init__(self, msg=''):
         self.line = -1
+        self.msg = msg
 
     def __str__(self):
-        return self.message%self.line
+        return self.msg or (self.message % self.line)
 
 class BadRelationFormat(ArffException):
     '''Error raised when the relation declaration is in an invalid format.'''
@@ -240,20 +241,9 @@ class BadLayout(ArffException):
     message = 'Invalid layout of the ARFF file, at line %d.'
 
 class BadObject(ArffException):
-    '''Error raised when the object representing the ARFF file has something 
+    '''Error raised when the object representing the ARFF file has something
     wrong.'''
 
-    def __str__(self):
-        return 'Invalid object.'
-
-class BadObject(ArffException):
-    '''Error raised when the object representing the ARFF file has something 
-    wrong.'''
-    def __init__(self, msg=''):
-        self.msg = msg
-
-    def __str__(self):
-        return '%s'%self.msg
 # =============================================================================
 
 # INTERNAL ====================================================================
