@@ -184,6 +184,9 @@ LOD = 2     # Constant value representing a sparse matrix in list of
             # dictionaries format
 _SUPPORTED_DATA_STRUCTURES = [DENSE, COO, LOD]
 
+def is_valid_type(type_):
+    return type_ in _SIMPLE_TYPES or type_.upper().startswith('DATE ')
+
 # =============================================================================
 
 # COMPATIBILITY WITH PYTHON 3 =================================================
@@ -680,8 +683,9 @@ class ArffDecoder(object):
         else:
             # If not nominal, verify the type name
             type_ = unicode(type_).upper()
-            if type_ not in ['NUMERIC', 'REAL', 'INTEGER', 'STRING']:
-                raise BadAttributeType()
+            if not is_valid_type(type_):
+                raise BadAttributeType('Invalid type "{}" for attribute "{}"'
+                                    .format(type_, name))
 
         return (name, type_)
 
@@ -908,18 +912,19 @@ class ArffEncoder(object):
         # ATTRIBUTES
         if not obj.get('attributes'):
             raise BadObject('Attributes not found.')
-            
+
         for attr in obj['attributes']:
             # Verify for bad object format
             if not isinstance(attr, (tuple, list)) or \
                len(attr) != 2 or \
                not isinstance(attr[0], basestring):
-                raise BadObject('Invalid attribute declaration "%s"'%str(attr))
+                raise BadObject('Invalid attribute declaration: "%s"'%str(attr))
 
             if isinstance(attr[1], basestring):
                 # Verify for invalid types
-                if attr[1] not in _SIMPLE_TYPES:
-                    raise BadObject('Invalid attribute type "%s"'%str(attr))
+                if not is_valid_type(attr[1]):
+                    raise BadObject('Invalid type "{}" for attribute "{}"'
+                                    .format(attr[1], attr[0]))
 
             # Verify for bad object format
             elif not isinstance(attr[1], (tuple, list)):
