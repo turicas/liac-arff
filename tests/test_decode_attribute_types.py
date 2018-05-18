@@ -144,3 +144,25 @@ class TestDecodeAttributeTypes(unittest.TestCase):
             fixture
         )
 
+    def test_date(self):
+        '''Date attributes.'''
+        decoder = self.get_decoder()
+
+        # Simple case
+        fixture = u'@ATTRIBUTE attribute-name DATE YYYY-MM-DD'
+        result = decoder._decode_attribute(fixture)
+        expected = (u'attribute-name', u'DATE YYYY-MM-DD')
+
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], expected[0])
+        self.assertEqual(result[1], expected[1])
+
+        # Case insensitive
+        fixture = u'@ATTRIBUTE attribute-name dAtE YYYY-MM-DD'
+        result = decoder._decode_attribute(fixture)
+        expected = (u'attribute-name', u'DATE YYYY-MM-DD')
+
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], expected[0])
+        self.assertEqual(result[1], expected[1])
+
